@@ -1,5 +1,4 @@
 import fs from "node:fs/promises";
-import Log from "../src/util/log.js";
 
 // ========================= //
 // = Copyright (c) NullDev = //
@@ -37,7 +36,7 @@ try {
   await fs.access("./config/config.js");
 }
 catch (error){
-  Log.error("Config file not found. To create one, either copy 'config.template.js' and rename it to 'config.custom.js' or run 'npm run generate-config'.");
+  console.error("Config file not found. To create one, either copy 'config.template.js' and rename it to 'config.custom.js' or run 'npm run generate-config'.");
   process.exit(1);
 }
 
@@ -45,7 +44,7 @@ try {
   await fs.access("./config/config.template.js");
 }
 catch (error){
-  Log.error("Config template file not found. This is needed to read default values. Please re-clone the repository.");
+  console.error("Config template file not found. This is needed to read default values. Please re-clone the repository.");
   process.exit(1);
 }
 

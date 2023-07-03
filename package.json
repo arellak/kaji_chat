@@ -13,7 +13,9 @@
   "author": "arellak",
   "license": "Apache-2.0",
   "dependencies": {
-    "node-telegram-bot-api": "^0.61.0"
+    "node-telegram-bot-api": "^0.61.0",
+    "wink-eng-lite-web-model": "^1.5.0",
+    "wink-nlp": "^1.14.2"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.22.5",
