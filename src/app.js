@@ -10,11 +10,34 @@ const botToken = config.bot.token;
 const bot = new TelegramBot(botToken, { polling: true });
 
 // const minTokens = 3;
-
 // const tokenSize = 4;
 
 const markovChain = readJson();
 let lastBotMessage;
+const chance = 0.5;
+
+const getResponseByWord = (msg) => {
+  const words = nlp.readDoc(msg).tokens().out();
+  const chances = {};
+  Object.keys(markovChain).forEach((key) => {
+    const containedWords = [];
+    words.forEach((word) => {
+      if(key.includes(word)) containedWords.push(word);
+    });
+    if(containedWords.length > 0 && containedWords.length >= (words.length * chance)){
+      chances[key] = (containedWords.length / words.length);
+    }
+  });
+  const keys = Object.keys(chances);
+  const randomKey = keys[Math.floor(Math.random() * keys.length)];
+  if(randomKey === undefined) return msg;
+  const answers = markovChain[randomKey];
+  const answersKeys = Object.keys(answers);
+  const randomAnswerKey = answersKeys[Math.floor(Math.random() * answersKeys.length)];
+  if(randomAnswerKey === undefined) return msg;
+  console.log(randomAnswerKey);
+  return randomAnswerKey;
+};
 
 const trainNew = (msg) => {
   if(msg === undefined || msg === "") return;
@@ -66,28 +89,28 @@ const trainNew = (msg) => {
 //   writeJson(markovChain);
 // };
 
-const getNextState = (currentState) => {
-  const randomNumber = Math.random();
-  let probability = 0.0;
-  let nextState = currentState;
+// const getNextState = (currentState) => {
+//   const randomNumber = Math.random();
+//   let probability = 0.0;
+//   let nextState = currentState;
 
-  for(const state in markovChain[currentState]){
-    probability += markovChain[currentState][state];
-    if(randomNumber <= probability){
-      nextState = state;
-      break;
-    }
-  }
+//   for(const state in markovChain[currentState]){
+//     probability += markovChain[currentState][state];
+//     if(randomNumber <= probability){
+//       nextState = state;
+//       break;
+//     }
+//   }
 
-  return nextState;
-};
+//   return nextState;
+// };
 
-const generateReply = (startWord) => {
-  const response = getNextState(startWord);
-  if(startWord === response) return startWord;
+// const generateReply = (startWord) => {
+//   const response = getNextState(startWord);
+//   if(startWord === response) return startWord;
 
-  return response;
-};
+//   return response;
+// };
 
 // const lastToken = (msg) => {
 //   const words = nlp.readDoc(msg).tokens().out();
@@ -111,11 +134,11 @@ const generateReply = (startWord) => {
 //   return "no answer...";
 // };
 
-const handleNewMessage = (msg) => {
-  const startWord = msg.sticker ? msg.sticker?.emoji : nlp.readDoc(msg.text).sentences().out()[0];
+// const handleNewMessage = (msg) => {
+//   const startWord = msg.sticker ? msg.sticker?.emoji : nlp.readDoc(msg.text).sentences().out()[0];
 
-  return generateReply(startWord);
-};
+//   return generateReply(startWord);
+// };
 
 const logConversation = (msg, reply) => {
   if(msg.from?.username === undefined){
@@ -126,6 +149,8 @@ const logConversation = (msg, reply) => {
   }
   console.log(`Mukaji: ${reply}`);
 };
+
+// bot.onText(/\/stats/, (msg) => {});
 
 bot.onText(/\/start/, (msg) => {
   // eslint-disable-next-line no-return-assign
@@ -152,9 +177,8 @@ bot.on("message", (msg) => {
   if(lastBotMessage === undefined){
     lastBotMessage = "hey";
   }
-  trainNew(msg.text);
-
-  const reply = handleNewMessage(msg);
+  trainNew(msg?.text);
+  const reply = getResponseByWord(msg?.text);
   lastBotMessage = reply;
   logConversation(msg, reply === "" ? "Couldn't find an answer, sorry..." : reply);
   bot.sendMessage(msg.chat.id, reply === "" ? "Couldn't find an answer, sorry..." : reply);
