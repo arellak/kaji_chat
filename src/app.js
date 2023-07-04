@@ -9,33 +9,30 @@ const nlp = winkNLP(model);
 const botToken = config.bot.token;
 const bot = new TelegramBot(botToken, { polling: true });
 
-// const minTokens = 3;
-// const tokenSize = 4;
-
 const markovChain = readJson();
 let lastBotMessage;
-const chance = 0.5;
 
 const getResponseByWord = (msg) => {
   const words = nlp.readDoc(msg).tokens().out();
-  const chances = {};
-  Object.keys(markovChain).forEach((key) => {
-    const containedWords = [];
-    words.forEach((word) => {
-      if(key.includes(word)) containedWords.push(word);
-    });
-    if(containedWords.length > 0 && containedWords.length >= (words.length * chance)){
-      chances[key] = (containedWords.length / words.length);
+
+  const chances = Object.keys(markovChain).reduce((acc, key) => {
+    const containedWords = words.filter(word => key.includes(word));
+    if (containedWords.length > 0 && containedWords.length >= (words.length * config.markovChain.threshold)){
+      acc[key] = (containedWords.length / words.length);
     }
-  });
+    return acc;
+  }, {});
+
   const keys = Object.keys(chances);
   const randomKey = keys[Math.floor(Math.random() * keys.length)];
-  if(randomKey === undefined) return msg;
-  const answers = markovChain[randomKey];
-  const answersKeys = Object.keys(answers);
+
+  if (randomKey === undefined) return msg;
+
+  const answersKeys = Object.keys(markovChain[randomKey]);
   const randomAnswerKey = answersKeys[Math.floor(Math.random() * answersKeys.length)];
-  if(randomAnswerKey === undefined) return msg;
-  console.log(randomAnswerKey);
+
+  if (randomAnswerKey === undefined) return msg;
+
   return randomAnswerKey;
 };
 
