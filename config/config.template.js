@@ -5,5 +5,6 @@ export default {
   markovChain: {
     threshold: 0.5,
   },
-  blackList: [],
+  blacklist: [],
+  blacklist_responses: [],
 };

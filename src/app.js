@@ -147,6 +147,13 @@ const logConversation = (msg, reply) => {
   console.log(`Mukaji: ${reply}`);
 };
 
+const containsBlacklistWord = (msg) => {
+  const words = nlp.readDoc(msg).tokens().out();
+  // @ts-ignore
+  const containedWords = words.filter(word => config.blacklist.includes(word));
+  return containedWords.length > 0;
+};
+
 // bot.onText(/\/stats/, (msg) => {});
 
 bot.onText(/\/start/, (msg) => {
@@ -171,6 +178,15 @@ bot.on("message", (msg) => {
     console.log("===========================================");
     return;
   }
+  if(containsBlacklistWord(msg.text)){
+    // get a random answer from config.blacklistAnswers
+    const randomAnswer = config.blacklist_responses[Math.floor(Math.random() * config.blacklist_responses.length)];
+    bot.sendMessage(msg.chat.id, randomAnswer);
+    console.log("blacklisted word found, skipping...");
+    console.log("===========================================");
+    return;
+  }
+
   if(lastBotMessage === undefined){
     lastBotMessage = "hey";
   }
