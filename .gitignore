@@ -9,9 +9,6 @@ lerna-debug.log*
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# Config
-config/config.custom.js
-
 # DB
 data/*.sqlite
 
@@ -133,5 +130,13 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-data/model.json
-oldStuff/*
+
+telegram_bot/data/model.json
+telegram_bot/oldStuff/*
+# Config
+telegram_bot/config/config.custom.js
+
+discord_bot/oldStuff
+discord_bot/data/model.json
+discord_bot/node_modules
+discord_bot/config/config.custom.js

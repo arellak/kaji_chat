@@ -1,0 +1,25 @@
+{
+  "name": "kaji_chat",
+  "version": "1.0.0",
+  "description": "Chat Bot using markov chains",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start:dev": "npm run lint && node src/app.js",
+    "start:prod": "node src/app.js",
+    "start": "npm run start:dev",
+    "lint": "eslint . --fix"
+  },
+  "author": "arellak",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "node-cron": "^3.0.3",
+    "wink-eng-lite-web-model": "^1.5.0",
+    "wink-nlp": "^1.14.2"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.22.5",
+    "eslint": "^8.43.0"
+  }
+}
